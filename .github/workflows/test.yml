@@ -55,3 +55,44 @@ jobs:
           cd rolldown
           corepack enable
           pnpm install --frozen-lockfile --ignore-scripts
+
+  build-msys:
+    name: build - msys - ucrt64
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            git
+            curl
+          pacboy: >-
+            nodejs:p
+
+      - name: setup pnpm
+        shell: msys2 {0}
+        run: npm install -g pnpm
+
+      - name: clone rolldown
+        shell: msys2 {0}
+        run: |
+          git clone --depth 1 --branch $ROLLDOWN_REF https://github.com/rolldown/rolldown
+      - name: cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            rolldown/node_modules
+          key: ${{ runner.os }}-ucrt64-node-rolldown-${{ hashFiles('rolldown/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-ucrt64-node-rolldown-
+
+      - name: prepare rolldown
+        shell: msys2 {0}
+        run: |
+          cd rolldown
+          corepack enable
+          pnpm install --frozen-lockfile --ignore-scripts
