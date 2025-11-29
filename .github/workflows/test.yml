@@ -1,0 +1,55 @@
+name: Checking out rolldown and Building
+
+env:
+  DEBUG: "napi:*"
+  RUST_BACKTRACE: full
+  # https://github.com/nodejs/node/issues/51555#issuecomment-2290742072
+  DISABLE_V8_COMPILE_CACHE: 1
+  ROLLDOWN_REF: "v1.0.0-beta.47"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-normal:
+    strategy:
+      fail-fast: false
+      matrix:
+        settings:
+          - host: ubuntu-latest
+          - host: windows-latest
+
+    name: build - ${{ matrix.settings.host }}
+    runs-on: ${{ matrix.settings.host }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: clone rolldown
+        run: |
+          git clone --depth 1 --branch $ROLLDOWN_REF https://github.com/rolldown/rolldown
+
+      - name: cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            rolldown/node_modules
+          key: ${{ runner.os }}-node-rolldown-${{ hashFiles('rolldown/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-rolldown-
+
+      - name: prepare rolldown
+        run: |
+          cd rolldown
+          corepack enable
+          pnpm install --frozen-lockfile --ignore-scripts
