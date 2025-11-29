@@ -56,6 +56,11 @@ jobs:
           corepack enable
           pnpm install --frozen-lockfile --ignore-scripts
 
+      - name: List .node files
+        if: ${{ matrix.settings.host }} == "ubuntu-latest"
+        run: |
+          find node_modules -type f -name '*.node' -print
+
   build-msys:
     name: build - msys - ucrt64
     runs-on: windows-latest
