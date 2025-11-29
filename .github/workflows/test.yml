@@ -59,6 +59,7 @@ jobs:
       - name: List .node files
         if: ${{ matrix.settings.host }} == "ubuntu-latest"
         run: |
+          cd rolldown
           find node_modules -type f -name '*.node' -print
 
   build-msys:
