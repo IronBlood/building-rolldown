@@ -39,7 +39,7 @@ jobs:
 
       - name: clone rolldown
         run: |
-          git clone --depth 1 --branch $ROLLDOWN_REF https://github.com/rolldown/rolldown
+          git clone --depth 1 --branch ${{ env.ROLLDOWN_REF }} https://github.com/rolldown/rolldown
 
       - name: cache node_modules
         uses: actions/cache@v4
