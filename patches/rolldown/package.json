@@ -1,0 +1,12 @@
+{
+  "name": "rolldown-binding-builder",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node ./build-binding.mjs"
+  },
+  "dependencies": {
+    "@napi-rs/cli": "3.4.1",
+    "glob": "11.0.3"
+  }
+}

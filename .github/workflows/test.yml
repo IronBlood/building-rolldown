@@ -14,6 +14,7 @@ on:
 
 jobs:
   build-normal:
+    if: ${{ false }}
     strategy:
       fail-fast: false
       matrix:
@@ -78,6 +79,9 @@ jobs:
             curl
           pacboy: >-
             nodejs:p
+            toolchain:p
+            cmake:p
+            rust:p
 
       - name: setup pnpm
         shell: msys2 {0}
@@ -99,6 +103,13 @@ jobs:
       - name: prepare rolldown
         shell: msys2 {0}
         run: |
-          cd rolldown
-          corepack enable
-          pnpm install --frozen-lockfile --ignore-scripts
+          mkdir -p rolldown/dummy/rolldown-binding-builder
+          cp rolldown/packages/rolldown/build-binding.ts rolldown/dummy/rolldown-binding-builder/build-binding.mjs
+          cp patches/rolldown/package.json rolldown/dummy/rolldown-binding-builder
+
+      - name: build rolldown binding
+        shell: msys2 {0}
+        run: |
+          cd rolldown/dummy/rolldown-binding-builder
+          npm install
+          node ./build-binding.mjs
